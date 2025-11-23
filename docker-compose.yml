@@ -1,4 +1,26 @@
 services:
+  pr_service:
+    container_name: 'pr_service'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      POSTGRES_HOST: "${POSTGRES_HOST}"
+      POSTGRES_PORT: "${POSTGRES_PORT}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_MAX_CONN: "${POSTGRES_MAX_CONN}"
+      SERVER_PORT: "${SERVER_PORT}"
+    ports:
+      - "${SERVER_PORT}:{SERVER_PORT}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
   postgres:
     container_name: 'postgres'
     image: postgres:17
