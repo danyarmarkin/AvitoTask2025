@@ -80,6 +80,7 @@ func (i Impl) ReassignPR(ctx context.Context, pr entity.PullRequest, oldReviewer
 		return entity.PullRequest{}, err
 	}
 
+	newUserId := ""
 	for idx, reviewerID := range pr.AssignedReviewers {
 		if reviewerID == oldReviewer.UserId {
 			pr.AssignedReviewers = append(pr.AssignedReviewers[:idx], pr.AssignedReviewers[idx+1:]...)
@@ -94,7 +95,8 @@ func (i Impl) ReassignPR(ctx context.Context, pr entity.PullRequest, oldReviewer
 			}
 		}
 		if len(active) > 0 {
-			pr.AssignedReviewers = append(pr.AssignedReviewers, active[rand.Intn(len(active))].UserId)
+			newUserId = active[rand.Intn(len(active))].UserId
+			pr.AssignedReviewers = append(pr.AssignedReviewers, newUserId)
 		}
 	}
 
@@ -105,5 +107,6 @@ func (i Impl) ReassignPR(ctx context.Context, pr entity.PullRequest, oldReviewer
 		}
 		return entity.PullRequest{}, err
 	}
+	pr.ReplacedByReviewer = newUserId
 	return pr, nil
 }
