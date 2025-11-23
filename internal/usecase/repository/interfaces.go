@@ -20,6 +20,7 @@ type PRRepository interface {
 	UpdateAssignedReviewers(ctx context.Context, pr entity.PullRequest) (entity.PullRequest, error)
 	Merge(ctx context.Context, pr entity.PullRequest) (entity.PullRequest, error)
 	GetPRByID(ctx context.Context, prID string) (entity.PullRequest, error)
+	GetUsersPRs(ctx context.Context, userID string) ([]entity.PullRequest, error)
 }
 
 type Impl struct {

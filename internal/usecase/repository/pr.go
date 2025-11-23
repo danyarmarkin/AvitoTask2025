@@ -12,7 +12,7 @@ import (
 
 var _ PRRepository = (*Impl)(nil)
 
-func (i Impl) CreatePullRequest(ctx context.Context, pr entity.PullRequest) (entity.PullRequest, error) {
+func (i *Impl) CreatePullRequest(ctx context.Context, pr entity.PullRequest) (entity.PullRequest, error) {
 	var (
 		prID, prName, authorID, status string
 		createdAt, mergedAt            sql.NullTime
@@ -69,7 +69,7 @@ func (i Impl) CreatePullRequest(ctx context.Context, pr entity.PullRequest) (ent
 
 // UpdateAssignedReviewers updates the assigned reviewers of a pull request.
 // Returns entity.ErrPRMerged if the pull request is already merged.
-func (i Impl) UpdateAssignedReviewers(ctx context.Context, pr entity.PullRequest) (entity.PullRequest, error) {
+func (i *Impl) UpdateAssignedReviewers(ctx context.Context, pr entity.PullRequest) (entity.PullRequest, error) {
 	const query = `
 			UPDATE pr
 			SET assigned_reviewers = $2
@@ -114,7 +114,7 @@ func (i Impl) UpdateAssignedReviewers(ctx context.Context, pr entity.PullRequest
 	return pr, nil
 }
 
-func (i Impl) Merge(ctx context.Context, pr entity.PullRequest) (entity.PullRequest, error) {
+func (i *Impl) Merge(ctx context.Context, pr entity.PullRequest) (entity.PullRequest, error) {
 	const query = `
 			UPDATE pr
 			SET status = $2,
@@ -160,7 +160,7 @@ func (i Impl) Merge(ctx context.Context, pr entity.PullRequest) (entity.PullRequ
 	return pr, nil
 }
 
-func (i Impl) GetPRByID(ctx context.Context, prID string) (entity.PullRequest, error) {
+func (i *Impl) GetPRByID(ctx context.Context, prID string) (entity.PullRequest, error) {
 	const query = `
 			SELECT pull_request_id, pull_request_name, author_id, assigned_reviewers, status, created_at, merged_at
 			FROM pr
@@ -198,4 +198,31 @@ func (i Impl) GetPRByID(ctx context.Context, prID string) (entity.PullRequest, e
 		pr.MergedAt = nil
 	}
 	return pr, nil
+}
+
+func (i *Impl) GetUsersPRs(ctx context.Context, userID string) ([]entity.PullRequest, error) {
+	const query = ` 
+SELECT pull_request_id, pull_request_name, author_id, status
+FROM pr
+WHERE assigned_reviewers @> ARRAY[$1]::text[];
+`
+	rows, err := i.db.Query(ctx, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var prs []entity.PullRequest
+	for rows.Next() {
+		var pr entity.PullRequest
+		err := rows.Scan(&pr.PullRequestId, &pr.PullRequestName, &pr.AuthorId, &pr.Status)
+		if err != nil {
+			return nil, err
+		}
+		prs = append(prs, pr)
+	}
+	if rows.Err() != nil {
+		return nil, rows.Err()
+	}
+	return prs, nil
 }

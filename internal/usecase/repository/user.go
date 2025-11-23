@@ -10,7 +10,7 @@ import (
 
 var _ UserRepository = (*Impl)(nil)
 
-func (i Impl) CreateOrUpdateUser(ctx context.Context, user entity.User) (entity.User, error) {
+func (i *Impl) CreateOrUpdateUser(ctx context.Context, user entity.User) (entity.User, error) {
 	const query = `
 		INSERT INTO users (user_id, username, team_name, is_active)
 		VALUES ($1, $2, $3, $4)
@@ -26,7 +26,7 @@ func (i Impl) CreateOrUpdateUser(ctx context.Context, user entity.User) (entity.
 	return updatedUser, nil
 }
 
-func (i Impl) UpdateUserActive(ctx context.Context, user entity.User) (entity.User, error) {
+func (i *Impl) UpdateUserActive(ctx context.Context, user entity.User) (entity.User, error) {
 	const query = `
 		UPDATE users
 		SET is_active = $1
@@ -44,7 +44,7 @@ func (i Impl) UpdateUserActive(ctx context.Context, user entity.User) (entity.Us
 	return updatedUser, nil
 }
 
-func (i Impl) GetTeamUsers(ctx context.Context, teamName string) ([]entity.User, error) {
+func (i *Impl) GetTeamUsers(ctx context.Context, teamName string) ([]entity.User, error) {
 	const query = `
 		SELECT user_id, username, team_name, is_active
 		FROM users
@@ -76,7 +76,7 @@ func (i Impl) GetTeamUsers(ctx context.Context, teamName string) ([]entity.User,
 	return users, nil
 }
 
-func (i Impl) CheckTeamExists(ctx context.Context, teamName string) (bool, error) {
+func (i *Impl) CheckTeamExists(ctx context.Context, teamName string) (bool, error) {
 	const query = `
 		SELECT 1
 		FROM users
@@ -94,7 +94,7 @@ func (i Impl) CheckTeamExists(ctx context.Context, teamName string) (bool, error
 	return true, nil
 }
 
-func (i Impl) GetTeamUsersByAuthorID(ctx context.Context, authorID string) ([]entity.User, error) {
+func (i *Impl) GetTeamUsersByAuthorID(ctx context.Context, authorID string) ([]entity.User, error) {
 	const query = `
 		SELECT u.user_id, u.username, u.team_name, u.is_active
 		FROM users u

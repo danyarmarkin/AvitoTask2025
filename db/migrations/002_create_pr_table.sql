@@ -13,9 +13,6 @@ CREATE TABLE pr
 
 );
 
--- SELECT *
--- FROM pr
--- WHERE assigned_reviewers @> ARRAY[$1]::text[];
 
 CREATE INDEX idx_pr_assigned_reviewers_gin ON pr USING GIN (assigned_reviewers);
 

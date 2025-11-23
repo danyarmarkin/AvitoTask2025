@@ -19,6 +19,10 @@ func (i Impl) SetUserActive(ctx context.Context, user entity.User) (entity.User,
 }
 
 func (i Impl) GetUserReviews(ctx context.Context, user entity.User) ([]entity.PullRequest, error) {
-	//TODO implement me
-	panic("implement me")
+	prs, err := i.PRRepo.GetUsersPRs(ctx, user.UserId)
+	if err != nil {
+		i.logger.Error("failed to get pull requests by reviewer id", zap.Error(err))
+		return nil, err
+	}
+	return prs, nil
 }
