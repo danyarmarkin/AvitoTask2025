@@ -16,7 +16,7 @@ git clone https://github.com/danyarmarkin/AvitoTask2025.git
 cd AvitoTask2025
 ```
 
-3. Запустите Docker контейнер:
+3. Запустите проект с помощью Docker Compose:
 
 ```bash
 docker compose up -d
@@ -29,5 +29,6 @@ docker compose up -d
     ```bash
     make generate
     ```
+   - Сгенерированный код не пушится в репозиторий.
 2. Миграции: Goose https://github.com/pressly/goose
     - Миграции находятся в директории [db/migrations](./db/migrations)
