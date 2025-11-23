@@ -14,7 +14,7 @@ services:
       POSTGRES_MAX_CONN: "${POSTGRES_MAX_CONN}"
       SERVER_PORT: "${SERVER_PORT}"
     ports:
-      - "${SERVER_PORT}:{SERVER_PORT}"
+      - "${SERVER_PORT}:${SERVER_PORT}"
     depends_on:
       postgres:
         condition: service_healthy
