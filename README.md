@@ -19,7 +19,7 @@ cd AvitoTask2025
 3. Запустите Docker контейнер:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ## Технологии
